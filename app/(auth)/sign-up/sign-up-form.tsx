@@ -39,7 +39,7 @@ const SignUpForm = () => {
             id="name"
             name="name"
             type="text"
-            required
+            // required
             autoComplete="name"
             defaultValue={signUpDefaultValues.name}
           />
@@ -51,8 +51,8 @@ const SignUpForm = () => {
           <Input
             id="email"
             name="email"
-            type="email"
-            required
+            type="text"
+            // required
             autoComplete="email"
             defaultValue={signUpDefaultValues.email}
           />
