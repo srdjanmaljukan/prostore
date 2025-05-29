@@ -7,7 +7,7 @@ import { ShippingAddress } from "@/types";
 import { shippingAddressSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ControllerRenderProps, useForm, SubmitHandler } from "react-hook-form";
-import { z, z } from "zod";
+import { z } from "zod";
 import { shippingAddressDefaultValues } from "@/lib/constants";
 import {
   Form,
