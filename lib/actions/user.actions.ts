@@ -12,6 +12,7 @@ import { prisma } from "@/db/prisma";
 import { formatError } from "../utils";
 import { ShippingAddress } from "@/types";
 import { getMyCart } from "./cart.actions";
+import { z } from "zod";
 
 // Sign in user with credentials
 export async function signInWithCredentials(
@@ -128,7 +129,7 @@ export async function updateUserAddress(data: ShippingAddress) {
 }
 
 // Update user's payment method
-export async function updateUserPaymentMethod(data: z.infet<typeof paymentMethodSchema>) {
+export async function updateUserPaymentMethod(data: z.infer<typeof paymentMethodSchema>) {
   try {
     const session = await auth();
 
