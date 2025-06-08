@@ -2,16 +2,36 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
 import { Order } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
-import {PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer} from "@paypal/react-paypal-js"
-import { createPayPalOrder, approvePayPalOrder } from "@/lib/actions/order.actions";
+import {
+  PayPalButtons,
+  PayPalScriptProvider,
+  usePayPalScriptReducer,
+} from "@paypal/react-paypal-js";
+import {
+  createPayPalOrder,
+  approvePayPalOrder,
+} from "@/lib/actions/order.actions";
 import { toast } from "sonner";
 
-const OrderDetailsTable = ({ order, paypalClientId }: { order: Order, paypalClientId: string }) => {
+const OrderDetailsTable = ({
+  order,
+  paypalClientId,
+}: {
+  order: Order;
+  paypalClientId: string;
+}) => {
   const {
     id,
     shippingAddress,
@@ -28,7 +48,7 @@ const OrderDetailsTable = ({ order, paypalClientId }: { order: Order, paypalClie
   } = order;
 
   const PrintLoadingState = () => {
-    const [{isPending, isRejected}] = usePayPalScriptReducer();
+    const [{ isPending, isRejected }] = usePayPalScriptReducer();
     let status = "";
 
     if (isPending) {
@@ -38,7 +58,7 @@ const OrderDetailsTable = ({ order, paypalClientId }: { order: Order, paypalClie
     }
 
     return status;
-  }
+  };
 
   const handleCreatePayPalOrder = async () => {
     const res = await createPayPalOrder(order.id);
@@ -50,7 +70,7 @@ const OrderDetailsTable = ({ order, paypalClientId }: { order: Order, paypalClie
     return res.data;
   };
 
-  const handleApprovePayPalOrder = async (data: {orderId: string}) => {
+  const handleApprovePayPalOrder = async (data: { orderID: string; }) => {
     const res = await approvePayPalOrder(order.id, data);
 
     if (res.success) {
@@ -58,7 +78,7 @@ const OrderDetailsTable = ({ order, paypalClientId }: { order: Order, paypalClie
     } else {
       toast.error(res.message);
     }
-  }
+  };
 
   return (
     <>
@@ -97,65 +117,76 @@ const OrderDetailsTable = ({ order, paypalClientId }: { order: Order, paypalClie
           </Card>
           <Card>
             <CardContent className="p-4 gap-4">
-                <h2 className="text-xl pb-4">Order Items</h2>
-                <Table>
+              <h2 className="text-xl pb-4">Order Items</h2>
+              <Table>
                 <TableHeader>
-                    <TableRow>
-                        <TableHead>Item</TableHead>
-                        <TableHead>Quantity</TableHead>
-                        <TableHead>Price</TableHead>
-                    </TableRow>
+                  <TableRow>
+                    <TableHead>Item</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Price</TableHead>
+                  </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {orderitems.map((item) => (
-                        <TableRow key={item.slug}>
-                            <TableCell>
-                                <Link href={`/product/${item.slug}`} className="flex items-center">
-                                <Image src={item.image} alt={item.name} width={50} height={50} />
-                                <span className="px-2">{item.name}</span>
-                                </Link>
-                            </TableCell>
-                            <TableCell>
-                                <span className="px-2">{item.qty}</span>
-                            </TableCell>
-                            <TableCell className="text-left">${item.price}</TableCell>
-                        </TableRow>
-                    ))}
+                  {orderitems.map((item) => (
+                    <TableRow key={item.slug}>
+                      <TableCell>
+                        <Link
+                          href={`/product/${item.slug}`}
+                          className="flex items-center"
+                        >
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            width={50}
+                            height={50}
+                          />
+                          <span className="px-2">{item.name}</span>
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <span className="px-2">{item.qty}</span>
+                      </TableCell>
+                      <TableCell className="text-left">${item.price}</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
         </div>
         <div>
-            <Card>
-                <CardContent className="p-4 gap-4 space-y-4">
-                    <div className="flex justify-between">
-                        <div>Items</div>
-                        <div>{formatCurrency(itemsPrice)}</div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div>Tax</div>
-                        <div>{formatCurrency(taxPrice)}</div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div>Shipping</div>
-                        <div>{formatCurrency(shippingPrice)}</div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div>Total</div>
-                        <div>{formatCurrency(totalPrice)}</div>
-                    </div>
-                    {/* Paypal Payment */}
-                    {!isPaid && paymentMethod === "PayPal" && (
-                      <div>
-                        <PayPalScriptProvider options={{clientId: paypalClientId}}>
-                          <PrintLoadingState />
-                          <PayPalButtons createOrder={handleCreatePayPalOrder} onApprove={handleApprovePayPalOrder} />
-                        </PayPalScriptProvider>
-                      </div>
-                    )}
-                </CardContent>
-            </Card>
+          <Card>
+            <CardContent className="p-4 gap-4 space-y-4">
+              <div className="flex justify-between">
+                <div>Items</div>
+                <div>{formatCurrency(itemsPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Tax</div>
+                <div>{formatCurrency(taxPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Shipping</div>
+                <div>{formatCurrency(shippingPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Total</div>
+                <div>{formatCurrency(totalPrice)}</div>
+              </div>
+              {/* Paypal Payment */}
+              {!isPaid && paymentMethod === "PayPal" && (
+                <div>
+                  <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+                    <PrintLoadingState />
+                    <PayPalButtons
+                      createOrder={handleCreatePayPalOrder}
+                      onApprove={handleApprovePayPalOrder}
+                    />
+                  </PayPalScriptProvider>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </>
