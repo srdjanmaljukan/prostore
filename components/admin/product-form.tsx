@@ -14,8 +14,10 @@ const ProductForm = ({type, product, productId}: {type: "create" | "update"; pro
 
     const router = useRouter();
 
-    const form = useForm<z.infer<typeof insertProductSchema>>({
-        resolver: type === "update" ? zodResolver(updateProductSchema) : zodResolver(insertProductSchema),
+    const schema = type === "update" ? updateProductSchema : insertProductSchema;
+
+    const form = useForm<z.infer<typeof schema>>({
+        resolver: zodResolver(schema),
         defaultValues: product && type === "update" ? product : productDefaultValues,
     })
 

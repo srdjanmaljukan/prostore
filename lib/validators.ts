@@ -19,7 +19,6 @@ export const insertProductSchema = z.object({
     isFeatured: z.boolean(),
     banner: z.string().nullable(),
     price: currency, 
-
 })
 
 // Schema for updating products
