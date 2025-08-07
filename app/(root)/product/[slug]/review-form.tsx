@@ -11,14 +11,15 @@ import { insertReviewSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StarIcon } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { createUpdateReview, getReviewByProductId } from "@/lib/actions/review.actions";
 
 const ReviewForm = ({userId, productId, onReviewSubmitted}: {
     userId: string;
     productId: string;
-    onReviewSubmitted?: () => void;
+    onReviewSubmitted: () => void;
 }) => {
 
     const [open, setOpen] = useState(false);
@@ -28,15 +29,41 @@ const ReviewForm = ({userId, productId, onReviewSubmitted}: {
         defaultValues: reviewFormDefaultValues,
     });
 
-    const handleOpenForm = () => {
+    // Open form handler
+    const handleOpenForm = async () => {
+        form.setValue("productId", productId);
+        form.setValue("userId", userId);
+
+        const review = await getReviewByProductId({productId});
+        if (review) {
+            form.setValue("title", review.title);
+            form.setValue("description", review.description);
+            form.setValue("rating", review.rating);
+        }
+
         setOpen(true);
+    }
+
+    // Submit form handler
+    const onSubmit: SubmitHandler<z.infer<typeof insertReviewSchema>> = async (values) => {
+        const res = await createUpdateReview({...values, productId});
+
+        if (!res.success) {
+            return toast.error(res.message);
+        }
+
+        setOpen(false);
+
+        onReviewSubmitted();
+
+        toast.success(res.message);
     }
 
     return ( <Dialog open={open} onOpenChange={setOpen}>
         <Button onClick={handleOpenForm} variant="default">Write a Review</Button>
         <DialogContent className="sm:max-w-[425px]">
             <Form {...form}>
-                <form method="POST">
+                <form method="POST" onSubmit={form.handleSubmit(onSubmit)}>
                     <DialogHeader>
                         <DialogTitle>Write a Review</DialogTitle>
                         <DialogDescription>
